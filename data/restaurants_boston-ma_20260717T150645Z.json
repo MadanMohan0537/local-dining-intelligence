@@ -1,0 +1,121 @@
+{
+  "location": "Boston, MA",
+  "search_term": "Thai restaurant",
+  "generated_at": "20260717T150645Z",
+  "restaurant_count": 4,
+  "ranked_recommendations": [
+    { "rank": 1, "name": "Kala Thai Cookery", "score": 0.885 },
+    { "rank": 2, "name": "Nakhon Southern Thai", "score": 0.87 },
+    { "rank": 3, "name": "Souper Siam", "score": 0.82 },
+    { "rank": 4, "name": "Thai Oishi", "score": 0.8 }
+  ],
+  "restaurants": [
+    {
+      "name": "Kala Thai Cookery",
+      "address": "151 Hanover St, Boston, MA 02109",
+      "rating": 4.6,
+      "reviews_count": 1128,
+      "price_level": "$10-30",
+      "category": "Thai restaurant",
+      "phone": "(857) 350-4378",
+      "website": "http://kalaboston.com/",
+      "menu_url": "https://www.kalathaiboston.com/#/",
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Kala+Thai+Cookery&query_place_id=ChIJx59PjYBx44kRt8kLOOk_AQI",
+      "latitude": 42.3618671,
+      "longitude": -71.0567664,
+      "reviews": [
+        { "stars": 5, "text": "Best pad Thai in Boston" },
+        { "stars": 5, "text": "Kala Thai was a fantastic dining experience! Every dish tasted authentic and full of flavor, and the prices were very reasonable. The staff was also kind and welcoming. We'll definitely be back!" },
+        { "stars": 4, "text": "We got takeout. Food was alright overall, the dumplings were the standout. Knocking off one star since the food was slightly oily for my taste, but other than that it was pretty good." }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu is a JS-rendered ordering platform; not machine-readable this run.",
+      "sentiment_score": 0.85,
+      "sentiment_label": "Very Positive",
+      "sentiment_rationale": "Strongly positive on authenticity, flavor, and value, with only a minor complaint about oiliness.",
+      "recommendation_score": 0.885,
+      "recommendation_rank": 1
+    },
+    {
+      "name": "Nakhon Southern Thai",
+      "address": "296 Washington St, Brighton, MA 02135",
+      "rating": 4.6,
+      "reviews_count": 101,
+      "price_level": "$20-30",
+      "category": "Thai restaurant",
+      "phone": "(617) 830-0098",
+      "website": "https://order.toasttab.com/online/nakhon",
+      "menu_url": "https://www.instagram.com/nakhonboston",
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Nakhon+Southern+Thai&query_place_id=ChIJV863VCN544kRCWjtXI7vzWQ",
+      "latitude": 42.3488772,
+      "longitude": -71.151051,
+      "reviews": [
+        { "stars": 5, "text": "Beautiful presentation of authentic Thai cuisine. The taste is not so spicy hot. The atmosphere is also nice. Good place for family dinner." },
+        { "stars": 5, "text": "All dishes are delicious!! Especially the Puu curry has such a nice flavor. Thai tea is good, Kanom Tuay is delicious too!" },
+        { "stars": 1, "text": "(no comment, just thumbs-down emojis)" },
+        { "stars": 5, "text": "Outstanding food, fragrant and flavorful, but also refreshing and crisp! We had the papaya salad, the sour beef soup, the fried chicken in coconut curry, as well as the sticky rice and panam cake for dessert." }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu link is a social media page; no structured menu data this run.",
+      "sentiment_score": 0.82,
+      "sentiment_label": "Very Positive",
+      "sentiment_rationale": "Detailed, enthusiastic praise for authenticity and flavor; one 1-star review had no explanatory text, so it's a low-confidence negative signal.",
+      "recommendation_score": 0.87,
+      "recommendation_rank": 2
+    },
+    {
+      "name": "Souper Siam",
+      "address": "190 High St, Boston, MA 02110",
+      "rating": 4.6,
+      "reviews_count": 38,
+      "price_level": "$10-20",
+      "category": "Thai restaurant",
+      "phone": "(617) 991-6536",
+      "website": "https://www.soupersiamboston.com/",
+      "menu_url": "https://www.soupersiamboston.com/",
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Souper+Siam&query_place_id=ChIJEQVAZLxx44kRcBrSELpA084",
+      "latitude": 42.3566828,
+      "longitude": -71.0522457,
+      "reviews": [
+        { "stars": 1, "text": "??? Says it's open. Lights are on. Doors locked" },
+        { "stars": 5, "text": "I ordered a pickup and Spicy wings are pretty good!" },
+        { "stars": 5, "text": "Felt like I was eating home cooking. Loved the sticky rice with mangos and chicken rice combo. Definitely have to come back again." },
+        { "stars": 5, "text": "Even the daikon soup was delicious. Full bodied! Took my chicken to go for the airport" },
+        { "stars": 5, "text": "Delicious casual Thai spot. Had both a rice and noodle dish and both were great." }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu page timed out; not machine-readable this run.",
+      "sentiment_score": 0.72,
+      "sentiment_label": "Positive",
+      "sentiment_rationale": "Food is consistently praised, but one reviewer showed up during posted hours to locked doors -- an operational reliability issue worth flagging, separate from food quality.",
+      "recommendation_score": 0.82,
+      "recommendation_rank": 3
+    },
+    {
+      "name": "Thai Oishi",
+      "address": "203 Adams St, Boston, MA 02122",
+      "rating": 4.6,
+      "reviews_count": 177,
+      "price_level": "$10-20",
+      "category": "Thai restaurant",
+      "phone": "(617) 282-2878",
+      "website": "http://www.thaioishiboston.com/",
+      "menu_url": "https://www.toasttab.com/thai-oishi-203-adams-st",
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Thai+Oishi&query_place_id=ChIJaRCHy2N744kRv4Ry_uIF0CY",
+      "latitude": 42.3018826,
+      "longitude": -71.0602053,
+      "reviews": [
+        { "stars": 2, "text": "Grabbed chicken pad Thai for lunch. While it was a healthy portion and came out quick, it was quite bland and tasted more like Chinese food." },
+        { "stars": 5, "text": "The food was good at this Thai place, but I found the portion sizes to be a bit smaller than I expected for the price. Still, the Pad Thai was tasty and the staff was super nice." },
+        { "stars": 5, "text": "Absolutely obsessed with this Thai spot! The pad Thai is to die for and the curry is bursting with flavor. Can't wait to come back and try more dishes!" }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu is a JS-rendered ordering platform; not machine-readable this run.",
+      "sentiment_score": 0.68,
+      "sentiment_label": "Mixed",
+      "sentiment_rationale": "Two enthusiastic reviews on flavor are offset by one complaint that the food tasted bland and inauthentic, plus notes on portion size for the price.",
+      "recommendation_score": 0.8,
+      "recommendation_rank": 4
+    }
+  ]
+}
