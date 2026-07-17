@@ -21,15 +21,20 @@ location supplied at runtime, it:
   6. Writes the full dataset to CSV + JSON.
   7. Commits and pushes the source code + dataset to a GitHub repository.
 
-No location is hardcoded anywhere in this script -- every run is driven by
-the `location` argument, so the same tool works for any end user, any city,
-any time.
+No location is hardcoded anywhere in this script. Pass one as an argument,
+or omit it and the script will ask the customer for it interactively --
+either way, the same tool works for any end user, any city, any time.
 
 USAGE
+    # Interactive: the script asks "Which location should I search for
+    # restaurants in?" and takes whatever the customer types.
+    python restaurant_scraper.py
+
+    # Or pass the location directly (e.g. for scripting/automation):
     python restaurant_scraper.py "Austin, TX"
-    python restaurant_scraper.py "Tampa, FL" --max-restaurants 15 --no-menu
-    python restaurant_scraper.py "Chicago, IL" --no-push
-    python restaurant_scraper.py "Denver, CO" --no-sentiment
+    python restaurant_scraper.py "Chicago, IL" --max-restaurants 15 --no-menu
+    python restaurant_scraper.py "Denver, CO" --no-push
+    python restaurant_scraper.py "Seattle, WA" --no-sentiment
 
 CONFIGURATION
     Copy .env.example to .env and fill in:
@@ -494,7 +499,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Search restaurants by location, analyze review sentiment with an AI model, "
                     "rank recommendations, and push source + dataset to GitHub.")
-    parser.add_argument("location", help='Location to search, e.g. "Austin, TX" (required at runtime; nothing hardcoded)')
+    parser.add_argument("location", nargs="?", default=None,
+                         help='Location to search, e.g. "Austin, TX". If omitted, you will be '
+                              'prompted to enter one interactively -- nothing is hardcoded.')
     parser.add_argument("--max-restaurants", type=int, default=DEFAULT_MAX_RESTAURANTS,
                          help=f"Max restaurants to fetch (default {DEFAULT_MAX_RESTAURANTS})")
     parser.add_argument("--max-reviews", type=int, default=DEFAULT_MAX_REVIEWS,
@@ -504,6 +511,14 @@ def main():
     parser.add_argument("--no-push", action="store_true", help="Write dataset locally but don't push to GitHub")
     args = parser.parse_args()
 
+    # No location is ever hardcoded. If the caller didn't pass one on the
+    # command line, ask the customer for it interactively right here.
+    location = args.location
+    if not location:
+        location = input('Which location should I search for restaurants in? (e.g. "Austin, TX"): ').strip()
+        while not location:
+            location = input("Please enter a location: ").strip()
+
     config = load_config()
     if not config["apify_token"]:
         print("ERROR: APIFY_API_TOKEN is not set. Copy .env.example to .env and fill it in.")
@@ -511,7 +526,7 @@ def main():
 
     client = ApifyClient(config["apify_token"])
 
-    restaurants = search_restaurants(client, args.location, args.max_restaurants)
+    restaurants = search_restaurants(client, location, args.max_restaurants)
     if not restaurants:
         print("No restaurants found for that location. Exiting.")
         sys.exit(0)
@@ -521,12 +536,12 @@ def main():
     restaurants = analyze_sentiment(restaurants, config, enabled=not args.no_sentiment)
     restaurants = rank_recommendations(restaurants) if not args.no_sentiment else restaurants
 
-    files = write_outputs(restaurants, args.location, config["output_dir"])
+    files = write_outputs(restaurants, location, config["output_dir"])
 
     if args.no_push:
         print("Skipping GitHub push (--no-push).")
     else:
-        push_to_github(files, args.location, config)
+        push_to_github(files, location, config)
 
     print("Done.")
 

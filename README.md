@@ -1,6 +1,7 @@
 # Restaurant Intelligence → GitHub Automation
 
-Given ANY location (supplied at runtime — nothing hardcoded), this project:
+A generic tool — not tied to any one city. Every run asks the customer
+which location they want (or accepts one as an argument), then:
 
 1. Searches restaurants near that location via Apify's **Google Maps
    Extractor** actor and pulls name, rating, review count, address, price
@@ -20,13 +21,9 @@ Given ANY location (supplied at runtime — nothing hardcoded), this project:
 6. Writes the full dataset to `data/` as both CSV and JSON.
 7. Commits and pushes the source code + dataset to a GitHub repository.
 
-## Example run (already executed once)
-
-A live run for **Tampa, FL** is included in `data/restaurants_tampa-fl_20260717T011235Z.{json,csv}`
-as a worked example — 8 restaurants, real Google reviews, menu items where
-available, and a ranked recommendation list. That run used the lexicon
-sentiment fallback (no AI model key was configured); set `DEEPSEEK_API_KEY`
-or `ANTHROPIC_API_KEY` for materially better, nuanced sentiment scoring.
+No example dataset ships in this repo on purpose — `data/` fills up with
+whatever locations your customers actually ask for, each run producing its
+own timestamped, location-named files (see below).
 
 ## Setup
 
@@ -53,7 +50,10 @@ The `.env` file is git-ignored, so your tokens never get committed.
 ## Usage
 
 ```bash
-# Full run: search, ratings, reviews, menu prices, AI sentiment, ranking, push to GitHub
+# Interactive: prompts "Which location should I search for restaurants in?"
+python restaurant_scraper.py
+
+# Or pass the customer's location directly (e.g. from another system)
 python restaurant_scraper.py "Austin, TX"
 
 # Bound cost / speed: fewer restaurants, fewer reviews, skip menu enrichment
@@ -65,6 +65,9 @@ python restaurant_scraper.py "Austin, TX" --no-sentiment
 # Dry run: write local files only, don't push
 python restaurant_scraper.py "Austin, TX" --no-push
 ```
+
+The location is never hardcoded — every run is scoped to whatever the
+customer asks for, whether typed in interactively or passed as an argument.
 
 Each run produces timestamped files like:
 
