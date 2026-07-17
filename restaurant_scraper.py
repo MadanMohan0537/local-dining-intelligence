@@ -26,13 +26,14 @@ or omit it and the script will ask the customer for it interactively --
 either way, the same tool works for any end user, any city, any time.
 
 USAGE
-    # Interactive: the script asks "Which location should I search for
-    # restaurants in?" and takes whatever the customer types.
+    # Interactive: the script asks what to search for and where, and takes
+    # whatever the customer types (cuisine + location, or just a location).
     python restaurant_scraper.py
 
-    # Or pass the location directly (e.g. for scripting/automation):
+    # Or pass the query directly (e.g. for scripting/automation):
+    python restaurant_scraper.py "Indian restaurants in Frisco, TX"
     python restaurant_scraper.py "Austin, TX"
-    python restaurant_scraper.py "Chicago, IL" --max-restaurants 15 --no-menu
+    python restaurant_scraper.py "Vegan restaurants in Chicago, IL" --max-restaurants 15 --no-menu
     python restaurant_scraper.py "Denver, CO" --no-push
     python restaurant_scraper.py "Seattle, WA" --no-sentiment
 
@@ -116,14 +117,27 @@ def slugify(text):
     return text.strip("-") or "location"
 
 
+def parse_query(raw: str):
+    """Split a free-form customer request like 'Indian restaurants in Frisco, TX'
+    into (search_term, location). Falls back to a generic 'restaurant' search
+    term if the customer only gave a bare location (e.g. 'Austin, TX')."""
+    match = re.search(r"^(.*?)\bin\b(.+)$", raw, re.IGNORECASE)
+    if match:
+        search_term = match.group(1).strip() or "restaurant"
+        location = match.group(2).strip()
+        if location:
+            return search_term, location
+    return "restaurant", raw.strip()
+
+
 # --------------------------------------------------------------------------
-# Step 1: search restaurants + ratings (works for any location string)
+# Step 1: search restaurants + ratings (works for any cuisine/location)
 # --------------------------------------------------------------------------
 
-def search_restaurants(client: ApifyClient, location: str, max_results: int):
-    print(f"[1/5] Searching restaurants near '{location}' (max {max_results})...")
+def search_restaurants(client: ApifyClient, search_term: str, location: str, max_results: int):
+    print(f"[1/5] Searching for '{search_term}' near '{location}' (max {max_results})...")
     run_input = {
-        "searchStringsArray": ["restaurant"],
+        "searchStringsArray": [search_term],
         "locationQuery": location,
         "maxCrawledPlacesPerSearch": max_results,
         "language": "en",
@@ -385,7 +399,7 @@ def rank_recommendations(restaurants: list):
 # Step 5: write dataset
 # --------------------------------------------------------------------------
 
-def write_outputs(restaurants: list, location: str, output_dir: str):
+def write_outputs(restaurants: list, location: str, output_dir: str, search_term: str = "restaurant"):
     print("[5/5] Writing dataset to CSV + JSON...")
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -397,6 +411,7 @@ def write_outputs(restaurants: list, location: str, output_dir: str):
 
     payload = {
         "location": location,
+        "search_term": search_term,
         "generated_at": ts,
         "restaurant_count": len(restaurants),
         "ranked_recommendations": [
@@ -499,8 +514,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Search restaurants by location, analyze review sentiment with an AI model, "
                     "rank recommendations, and push source + dataset to GitHub.")
-    parser.add_argument("location", nargs="?", default=None,
-                         help='Location to search, e.g. "Austin, TX". If omitted, you will be '
+    parser.add_argument("query", nargs="?", default=None,
+                         help='What to search for and where, e.g. "Indian restaurants in Frisco, TX" '
+                              'or just a bare location like "Austin, TX". If omitted, you will be '
                               'prompted to enter one interactively -- nothing is hardcoded.')
     parser.add_argument("--max-restaurants", type=int, default=DEFAULT_MAX_RESTAURANTS,
                          help=f"Max restaurants to fetch (default {DEFAULT_MAX_RESTAURANTS})")
@@ -511,13 +527,17 @@ def main():
     parser.add_argument("--no-push", action="store_true", help="Write dataset locally but don't push to GitHub")
     args = parser.parse_args()
 
-    # No location is ever hardcoded. If the caller didn't pass one on the
+    # Nothing is ever hardcoded. If the caller didn't pass a query on the
     # command line, ask the customer for it interactively right here.
-    location = args.location
-    if not location:
-        location = input('Which location should I search for restaurants in? (e.g. "Austin, TX"): ').strip()
-        while not location:
-            location = input("Please enter a location: ").strip()
+    raw_query = args.query
+    if not raw_query:
+        raw_query = input('What would you like me to search for, and where? '
+                           '(e.g. "Indian restaurants in Frisco, TX"): ').strip()
+        while not raw_query:
+            raw_query = input("Please enter what to search for and where: ").strip()
+
+    search_term, location = parse_query(raw_query)
+    print(f"Interpreting request as: search_term='{search_term}', location='{location}'")
 
     config = load_config()
     if not config["apify_token"]:
@@ -526,7 +546,7 @@ def main():
 
     client = ApifyClient(config["apify_token"])
 
-    restaurants = search_restaurants(client, location, args.max_restaurants)
+    restaurants = search_restaurants(client, search_term, location, args.max_restaurants)
     if not restaurants:
         print("No restaurants found for that location. Exiting.")
         sys.exit(0)
@@ -536,7 +556,7 @@ def main():
     restaurants = analyze_sentiment(restaurants, config, enabled=not args.no_sentiment)
     restaurants = rank_recommendations(restaurants) if not args.no_sentiment else restaurants
 
-    files = write_outputs(restaurants, location, config["output_dir"])
+    files = write_outputs(restaurants, location, config["output_dir"], search_term)
 
     if args.no_push:
         print("Skipping GitHub push (--no-push).")

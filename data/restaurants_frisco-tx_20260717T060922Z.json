@@ -1,0 +1,265 @@
+{
+  "location": "Frisco, TX",
+  "search_term": "Indian restaurant",
+  "generated_at": "20260717T060922Z",
+  "restaurant_count": 6,
+  "ranked_recommendations": [
+    {
+      "rank": 1,
+      "name": "Gokul Pure Veg - Gujarati & Punjabi Thali",
+      "score": 0.905
+    },
+    {
+      "rank": 2,
+      "name": "Marina Indian Restaurant",
+      "score": 0.85
+    },
+    {
+      "rank": 3,
+      "name": "Frisco BaseCamp Restaurant & Bar",
+      "score": 0.835
+    },
+    {
+      "rank": 4,
+      "name": "Spicy Vihaar",
+      "score": 0.835
+    },
+    {
+      "rank": 5,
+      "name": "Hifi Bros - Curry, Biryani & More",
+      "score": 0.82
+    },
+    {
+      "rank": 6,
+      "name": "SAN IDLI Vegetarian Restaurant & Indian Food",
+      "score": 0.795
+    }
+  ],
+  "restaurants": [
+    {
+      "name": "Gokul Pure Veg - Gujarati & Punjabi Thali",
+      "address": "4617 Coit Rd Ste 120, Frisco, TX 75035",
+      "rating": 4.8,
+      "reviews_count": 431,
+      "price_level": "$10-20",
+      "category": "Gujarati restaurant",
+      "phone": "(214) 308-9691",
+      "website": "https://www.gokultx.com/",
+      "menu_url": null,
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Gokul+Pure+Veg&query_place_id=ChIJr0kCaEc9TIYRsS8AHMVwEDs",
+      "latitude": 33.116909,
+      "longitude": -96.768778,
+      "reviews": [
+        {
+          "stars": 3,
+          "text": "It is a very small place. The service was good. The food was average. The kadhi was too watery, curries were bland, rotis too oily. Overall, for $10.99, it was ok."
+        },
+        {
+          "stars": 5,
+          "text": "This restaurant is serving Authentic Indian food. Their taste is same as you have in India. Must try: Gujarati Thali, Peri Peri Sandwich"
+        },
+        {
+          "stars": 5,
+          "text": "Very nice, fresh food with excellent quality. The service is outstanding, and the place is clean, welcoming. Highly recommend the Peri Peri Sandwich!"
+        },
+        {
+          "stars": 5,
+          "text": "Out of this world!!!"
+        },
+        {
+          "stars": 5,
+          "text": "One of the Best Gujarati Food Restaurant in DFW. Dabeli, Vada Pav, Gujarati Thali, Khaman. Everything was great Authentic taste."
+        }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu data unavailable this run.",
+      "sentiment_score": 0.85,
+      "sentiment_label": "Very Positive",
+      "sentiment_rationale": "Overwhelmingly positive reviews praising authentic Gujarati flavors, with one lukewarm note calling the food average and bland.",
+      "recommendation_score": 0.905,
+      "recommendation_rank": 1
+    },
+    {
+      "name": "Marina Indian Restaurant",
+      "address": "4617 Coit Rd Unit 130, Frisco, TX 75035",
+      "rating": 4.6,
+      "reviews_count": 2875,
+      "price_level": null,
+      "category": "Indian restaurant",
+      "phone": "(469) 579-4311",
+      "website": "https://marinaindian.com/?utm_source=google",
+      "menu_url": "https://marinaindian.com/menu?utm_source=menu",
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Marina+Indian+Restaurant&query_place_id=ChIJtfbiejY9TIYRZN_NG0Pt_nY",
+      "latitude": 33.1169906,
+      "longitude": -96.7686934,
+      "reviews": [
+        {
+          "stars": 5,
+          "text": "Highly recommend, we had the most amazing meal! They recommended the Tandoori mixed plate and the Dosas. Everything was delicious! Service was 10/10 we will be back."
+        },
+        {
+          "stars": 5,
+          "text": "Food was amazing"
+        },
+        {
+          "stars": 5,
+          "text": "King fish fry was the ultimate one and of course biryani was exceptional as well. Thanks Marina, we will be back soon"
+        },
+        {
+          "stars": 2,
+          "text": "The reason why I choose this rating is because the toilet is not clean and can see nasty stuff around the floor. The food is alright. The service is good and great customer service!"
+        }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu page timed out; not machine-readable this run.",
+      "sentiment_score": 0.78,
+      "sentiment_label": "Positive",
+      "sentiment_rationale": "Food quality and service are consistently praised, though one reviewer flagged restroom cleanliness.",
+      "recommendation_score": 0.85,
+      "recommendation_rank": 2
+    },
+    {
+      "name": "Frisco BaseCamp Restaurant & Bar",
+      "address": "2552 Stonebrook Pkwy #302, Frisco, TX 75034",
+      "rating": 4.6,
+      "reviews_count": 1430,
+      "price_level": "$10-30",
+      "category": "Nepalese restaurant",
+      "phone": "(972) 292-9538",
+      "website": "https://www.friscobasecamp.com/",
+      "menu_url": "https://friscobasecamp.com/menu",
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Frisco+BaseCamp&query_place_id=ChIJTVrt4nE7TIYR7ifoJ6ND3TU",
+      "latitude": 33.1335785,
+      "longitude": -96.867714,
+      "reviews": [
+        {
+          "stars": 5,
+          "text": "Tasty food healthy atmosphere, yummy momo's"
+        },
+        {
+          "stars": 5,
+          "text": "Loved it"
+        },
+        {
+          "stars": 5,
+          "text": "Good food and good service"
+        },
+        {
+          "stars": 1,
+          "text": "I wish I could leave negative stars. The veggie chowmien was SO unbearably spicy. I requested mild spice and got a furnace in my mouth."
+        }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu page is a JS-rendered ordering platform; not machine-readable this run.",
+      "sentiment_score": 0.75,
+      "sentiment_label": "Positive",
+      "sentiment_rationale": "Mostly enthusiastic reviews praising food and service, but one reviewer had a serious complaint about spice level not matching their request.",
+      "recommendation_score": 0.835,
+      "recommendation_rank": 3
+    },
+    {
+      "name": "Spicy Vihaar",
+      "address": "4235 Preston Rd Ste 100, Frisco, TX 75034",
+      "rating": 4.6,
+      "reviews_count": 1856,
+      "price_level": "$20-30",
+      "category": "Indian restaurant",
+      "phone": "(469) 902-8883",
+      "website": "https://www.spicyvihaar.com/",
+      "menu_url": "https://spicyvihaar.com/food-menu",
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Spicy+Vihaar&query_place_id=ChIJTcdlTJY9TIYRq9DcMf5zg4c",
+      "latitude": 33.1147907,
+      "longitude": -96.8063227,
+      "reviews": [
+        {
+          "stars": 1,
+          "text": "I was here for buffet. Biryani is not fresh it may be the last day one. its not even good taste. No proper service."
+        },
+        {
+          "stars": 5,
+          "text": "Food is amazing, the staff and the service is really good and will definitely recommend this place."
+        },
+        {
+          "stars": 5,
+          "text": "The food was amazing!! One of the best in town and the service was good too especially Rupesh was very friendly."
+        },
+        {
+          "stars": 5,
+          "text": "Must-try buffet with a great variety of dishes. Good staff, great service, and highly recommended"
+        },
+        {
+          "stars": 5,
+          "text": "Awesome staff, service and food. Gongura pulav taste is exceptional. Must revisit."
+        }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu page is a JS-rendered ordering platform; not machine-readable this run.",
+      "sentiment_score": 0.75,
+      "sentiment_label": "Positive",
+      "sentiment_rationale": "Four of five reviews are highly positive about food and service, but one flagged stale biryani and unresponsive service.",
+      "recommendation_score": 0.835,
+      "recommendation_rank": 4
+    },
+    {
+      "name": "Hifi Bros - Curry, Biryani & More",
+      "address": "2552 Stonebrook Pkwy Ste a500, Frisco, TX 75034",
+      "rating": 4.7,
+      "reviews_count": 149,
+      "price_level": "$10-20",
+      "category": "Modern Indian restaurant",
+      "phone": "(214) 308-9508",
+      "website": "https://www.hifibroskitchen.com/",
+      "menu_url": null,
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=Hifi+Bros&query_place_id=ChIJ4XBeF9A7TIYRenAOFM5k3oo",
+      "latitude": 33.1337665,
+      "longitude": -96.8683561,
+      "reviews": [],
+      "menu_items": [],
+      "menu_data_note": "Menu data unavailable this run.",
+      "sentiment_score": 0.7,
+      "sentiment_label": "Insufficient data",
+      "sentiment_rationale": "No review text was available in this sample; the 4.7 rating suggests a strong reputation, but sentiment can't be independently verified from text.",
+      "recommendation_score": 0.82,
+      "recommendation_rank": 5
+    },
+    {
+      "name": "SAN IDLI Vegetarian Restaurant & Indian Food",
+      "address": "15900 State Hwy 121 Ste 300, Frisco, TX 75035",
+      "rating": 4.7,
+      "reviews_count": 144,
+      "price_level": "$10-20",
+      "category": "Indian restaurant",
+      "phone": "(972) 332-8301",
+      "website": "https://sanidli.com/frisco/",
+      "menu_url": "https://bringmeal.com/menu/sanidli/frisco/usa",
+      "google_maps_url": "https://www.google.com/maps/search/?api=1&query=SAN+IDLI&query_place_id=ChIJmWUsRrcXTIYR4h-N2hoejq8",
+      "latitude": 33.1261113,
+      "longitude": -96.7363473,
+      "reviews": [
+        {
+          "stars": 5,
+          "text": "First time dining here tonight and all I can say is WOW. Their paneer bhurji dosa is one of the best I've ever had. We'll definitely be regulars here! Highly recommend"
+        },
+        {
+          "stars": 5,
+          "text": "Food tasted amazing. Excellent service. Coffee tasted great! Paneer Fried rice was top notch."
+        },
+        {
+          "stars": 1,
+          "text": "I wish there were an option to give zero stars. This place is totally unhygienic, with no regard for cleanliness. Not recommended at all."
+        },
+        {
+          "stars": 5,
+          "text": "Ignore any negative comments about this place. This is the most authentic South Indian food bar none! The chapatis are fresh and piping hot."
+        }
+      ],
+      "menu_items": [],
+      "menu_data_note": "Menu page timed out; not machine-readable this run.",
+      "sentiment_score": 0.65,
+      "sentiment_label": "Mixed",
+      "sentiment_rationale": "Strong praise for authenticity and flavor is offset by a serious hygiene/cleanliness complaint that deserves attention.",
+      "recommendation_score": 0.795,
+      "recommendation_rank": 6
+    }
+  ]
+}
