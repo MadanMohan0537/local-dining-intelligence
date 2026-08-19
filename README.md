@@ -121,3 +121,26 @@ python -m py_compile restaurant_scraper.py dining_analytics.py demo_data.py dash
 
 MIT
 
+
+
+## Cloudflare deployment
+
+The repository includes an edge-compatible application alongside the Python scraper and Streamlit dashboard:
+
+- `public/index.html` — restaurant analytics dashboard with browser-private CSV/JSON uploads
+- `worker/index.js` — synthetic demo analytics and health API
+- `wrangler.jsonc` — Worker and static-assets configuration
+- `package.json` — Cloudflare build and deployment scripts
+
+Configure Cloudflare Workers Builds with:
+
+```text
+Production branch: main
+Build command: npm install
+Deploy command: npm run deploy
+Root directory: leave blank
+```
+
+Do not enter `/` in the root-directory field.
+
+The deployed application uses an edge-compatible JavaScript dashboard. The full Apify, DeepSeek/Claude, Python analytics, and Streamlit workflow remains available for local or container execution.
