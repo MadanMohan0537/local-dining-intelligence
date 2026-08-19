@@ -74,8 +74,9 @@ except ImportError:
 try:
     from apify_client import ApifyClient
 except ImportError:
-    print("Missing dependency 'apify-client'. Run: pip install -r requirements.txt --break-system-packages")
-    sys.exit(1)
+    ApifyClient = None
+
+from demo_data import demo_restaurants
 
 GOOGLE_MAPS_ACTOR = "compass/google-maps-extractor"
 REVIEWS_ACTOR = "compass/Google-Maps-Reviews-Scraper"
@@ -522,6 +523,8 @@ def main():
                          help=f"Max restaurants to fetch (default {DEFAULT_MAX_RESTAURANTS})")
     parser.add_argument("--max-reviews", type=int, default=DEFAULT_MAX_REVIEWS,
                          help=f"Max reviews per restaurant to analyze (default {DEFAULT_MAX_REVIEWS})")
+    parser.add_argument("--demo", action="store_true",
+                         help="Run the complete pipeline with built-in sample data; no Apify token required")
     parser.add_argument("--no-menu", action="store_true", help="Skip menu/price enrichment")
     parser.add_argument("--no-sentiment", action="store_true", help="Skip AI sentiment analysis + ranking")
     parser.add_argument("--no-push", action="store_true", help="Write dataset locally but don't push to GitHub")
@@ -540,21 +543,28 @@ def main():
     print(f"Interpreting request as: search_term='{search_term}', location='{location}'")
 
     config = load_config()
-    if not config["apify_token"]:
-        print("ERROR: APIFY_API_TOKEN is not set. Copy .env.example to .env and fill it in.")
-        sys.exit(1)
+    if args.demo:
+        print("[demo] Using deterministic sample restaurants; no paid APIs will be called.")
+        location = location or "Boston, MA (Demo)"
+        restaurants = demo_restaurants()
+    else:
+        if not config["apify_token"]:
+            print("ERROR: APIFY_API_TOKEN is not set. Use --demo or configure .env.")
+            sys.exit(1)
+        if ApifyClient is None:
+            print("ERROR: apify-client is not installed. Run: pip install -r requirements.txt")
+            sys.exit(1)
+        client = ApifyClient(config["apify_token"])
+        restaurants = search_restaurants(client, search_term, location, args.max_restaurants)
+        if not restaurants:
+            print("No restaurants found for that location. Exiting.")
+            sys.exit(0)
+        restaurants = fetch_reviews_for_all(client, restaurants, args.max_reviews)
+        restaurants = enrich_with_menus(client, restaurants, enabled=not args.no_menu)
 
-    client = ApifyClient(config["apify_token"])
-
-    restaurants = search_restaurants(client, search_term, location, args.max_restaurants)
-    if not restaurants:
-        print("No restaurants found for that location. Exiting.")
-        sys.exit(0)
-
-    restaurants = fetch_reviews_for_all(client, restaurants, args.max_reviews)
-    restaurants = enrich_with_menus(client, restaurants, enabled=not args.no_menu)
     restaurants = analyze_sentiment(restaurants, config, enabled=not args.no_sentiment)
-    restaurants = rank_recommendations(restaurants) if not args.no_sentiment else restaurants
+    # Always assign ranks so --no-sentiment exports remain valid; rating is used as fallback.
+    restaurants = rank_recommendations(restaurants)
 
     files = write_outputs(restaurants, location, config["output_dir"], search_term)
 
