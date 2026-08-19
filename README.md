@@ -1,109 +1,123 @@
-# 🍽️ Local Dining Intelligence — Restaurant Analytics & Market Insights
+# 🍽️ Local Dining Intelligence
 
-<p align="center">
-  <strong>Automated restaurant competitive intelligence pipeline combining Apify Google Maps scraping with LLM sentiment analysis & automated GitHub syncing.</strong>
-</p>
+A reproducible restaurant discovery and market-intelligence product that combines Google Maps venue data, customer-review sentiment, competitive benchmarking, menu research, and category opportunity analysis.
 
-<p align="center">
-  <a href="#license"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License"></a>
-  <a href="https://www.python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square" alt="Python"></a>
-  <a href="https://apify.com"><img src="https://img.shields.io/badge/Data%20Extraction-Apify-00a878?style=flat-square" alt="Apify"></a>
-  <a href="https://deepseek.com"><img src="https://img.shields.io/badge/LLM-DeepSeek%20%2F%20Claude-blueviolet?style=flat-square" alt="LLM"></a>
-</p>
+The application works immediately with a built-in demo dataset. Apify, DeepSeek, and Anthropic integrations are optional enrichments—not prerequisites for evaluating the product.
 
----
+## Product capabilities
 
-## 📌 Overview
+- Search any cuisine and location through the CLI pipeline
+- Collect venue details, reviews, menus, coordinates, and pricing signals
+- Use DeepSeek, Claude, or a local lexicon sentiment fallback
+- Rank restaurants using ratings, sentiment, and review confidence
+- Explore restaurant competitors in an interactive Streamlit dashboard
+- Identify category white-space signals using demand, saturation, and quality gaps
+- Compare restaurants and inspect their geographic distribution
+- Export normalized CSV and JSON datasets
+- Run deterministically in demo mode without paid credentials
+- Validate analytics through automated GitHub Actions tests
 
-**Local Dining Intelligence** is a location-agnostic market analysis engine. Given any geographic location, neighborhood, or city, the system orchestrates a multi-step data enrichment pipeline:
-
-1. **Google Maps Venue Discovery:** Extracts restaurant metadata (names, address, price levels, review counts, average ratings, website).
-2. **Review & Menu Scraper:** Ingests recent customer reviews and extracts structured menu offerings and pricing via Apify actors.
-3. **LLM Aspect Sentiment Engine:** Scores customer sentiment across food quality, service speed, hospitality, ambiance, and price-to-value using **DeepSeek** or **Anthropic Claude**.
-4. **Weighted Recommendation Ranking:** Combines composite rating with sentiment signals to calculate a unified recommendation score.
-5. **Automated Export & Git Sync:** Generates timestamped JSON and CSV datasets and automatically commits/pushes the data to GitHub.
-
----
-
-## 🏗️ Data Pipeline
+## Architecture
 
 ```mermaid
-flowchart LR
-    A[Target Location] --> B[Apify Google Maps Extractor]
-    B --> C[Reviews & Menu Scraper]
-    C --> D[LLM Sentiment Analysis<br>DeepSeek / Claude]
-    D --> E[Recommendation Scoring Engine]
-    E --> F[Timestamped CSV & JSON Exports]
-    F --> G[Automated GitHub Push]
+flowchart TD
+    A[Location or cuisine query] --> B[Apify venue discovery]
+    B --> C[Reviews and menu enrichment]
+    C --> D[DeepSeek, Claude, or lexicon sentiment]
+    D --> E[Recommendation ranking]
+    E --> F[CSV and JSON datasets]
+    F --> G[Market analytics dashboard]
+    G --> H[Competitor and opportunity insights]
 ```
 
----
-
-## ✨ Key Features
-
-- **📍 Dynamic Geographic Querying:** Run on any location (e.g. `"Seattle, WA"`, `"Austin, TX"`, `"Brooklyn, NY"`) via interactive prompt or CLI arguments.
-- **🧠 Multi-Aspect Sentiment Scoring:** Evaluates food quality, service, ambiance, and price satisfaction separately rather than relying on a flat star rating.
-- **⚡ Flexible LLM Provider:** Supports **DeepSeek** (`deepseek-chat`), **Anthropic Claude**, or a built-in lexicon fallback.
-- **📊 Dual Format Outputs:** Writes normalized data to both `data/*.json` and `data/*.csv`.
-- **🔄 Headless CI/CD Automation:** Built-in git automation to push datasets automatically for scheduled cron jobs.
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- **Python:** 3.10 or higher
-- **Apify API Token:** ([Get Apify Token](https://console.apify.com/settings/integrations))
-- **AI API Key:** DeepSeek API Key or Anthropic Claude API Key
-
-### Installation
+## Run the dashboard immediately
 
 ```bash
-# Clone the repository
 git clone https://github.com/MadanMohan0537/local-dining-intelligence.git
 cd local-dining-intelligence
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Configure environment variables
-cp .env.example .env
+python -m venv .venv
 ```
 
-Fill in `.env`:
-```ini
-APIFY_API_TOKEN=your_apify_token_here
-DEEPSEEK_API_KEY=your_deepseek_key_here
-# Optional: ANTHROPIC_API_KEY, GITHUB_TOKEN, GITHUB_REPO_URL
-```
-
-### Usage
+Activate the environment:
 
 ```bash
-# Interactive run (prompts for location)
-python restaurant_scraper.py
+# Windows
+.venv\Scripts\activate
 
-# Direct location search
-python restaurant_scraper.py "Seattle, WA"
-
-# Bounded search with limit and fast execution
-python restaurant_scraper.py "Seattle, WA" --max-restaurants 15 --max-reviews 5 --no-menu
-
-# Dry run (saves files locally, skips git push)
-python restaurant_scraper.py "Seattle, WA" --no-push
+# macOS/Linux
+source .venv/bin/activate
 ```
 
----
+Then run:
 
-## 🛠️ Tech Stack
+```bash
+pip install -r requirements.txt
+streamlit run dashboard.py
+```
 
-- **Language:** Python 3.11+
-- **Data Gathering:** Apify Client (`apify-client`)
-- **AI / NLP:** `openai`, `anthropic`, `python-dotenv`
-- **Data Formats:** JSON, CSV, Pandas-compatible structures
+The dashboard opens at `http://localhost:8501` and defaults to the built-in demo.
 
----
+## Run a live restaurant search
 
-## 📄 License
+Copy `.env.example` to `.env` and add an Apify token:
 
-MIT License — see [LICENSE](LICENSE) for details.
+```ini
+APIFY_API_TOKEN=your_token
+SENTIMENT_PROVIDER=auto
+DEEPSEEK_API_KEY=
+ANTHROPIC_API_KEY=
+OUTPUT_DIR=data
+```
+
+Examples:
+
+```bash
+python restaurant_scraper.py "Indian restaurants in Frisco, TX" --max-restaurants 15 --max-reviews 5 --no-push
+python restaurant_scraper.py "Vegan restaurants in Boston, MA" --no-menu --no-push
+python restaurant_scraper.py "Seattle, WA" --no-sentiment --no-push
+```
+
+After generating the dataset, open `streamlit run dashboard.py` and select **Latest saved dataset**.
+
+## Intelligence methodology
+
+### Restaurant score
+
+The dashboard combines:
+
+- 45% normalized Google rating
+- 40% review sentiment
+- 15% review-volume confidence
+
+### Category opportunity signal
+
+The opportunity view combines:
+
+- 45% observed review demand
+- 35% lower competitive saturation
+- 20% category quality gap
+
+These scores are directional research tools. They are not financial forecasts and should be validated with rent, foot traffic, delivery demand, and primary customer research.
+
+## Output schema
+
+Each export contains restaurant identity, address, coordinates, rating, review volume, price level, category, website, review samples, menu items, sentiment results, and recommendation ranking.
+
+## Testing
+
+```bash
+pytest -q
+python -m py_compile restaurant_scraper.py dining_analytics.py demo_data.py dashboard.py
+```
+
+## Responsible use
+
+- Respect source-platform terms, rate limits, and applicable privacy requirements.
+- Do not treat public reviews as verified demographic or personal information.
+- AI sentiment is an imperfect decision-support signal and should be audited on representative review samples.
+- Do not commit API keys or tokens. `.env` is ignored by Git.
+
+## License
+
+MIT
+
