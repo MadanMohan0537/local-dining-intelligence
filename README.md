@@ -90,14 +90,14 @@ These values are directional research signals—not revenue, profitability, or i
 
 ```mermaid
 flowchart TD
-    A[Cuisine and location query] --> B[Apify venue discovery]
-    B --> C[Reviews and menu enrichment]
-    C --> D[DeepSeek, Claude, or lexicon sentiment]
-    D --> E[Restaurant ranking]
-    E --> F[CSV and JSON exports]
-    F --> G[Streamlit analytics console]
-    H[Synthetic demo API] --> I[Cloudflare dashboard]
-    J[User CSV or JSON] --> K[Browser-only analysis]
+    A["Search query"] --> B["Apify discovery"]
+    B --> C["Review and menu enrichment"]
+    C --> D["Sentiment analysis"]
+    D --> E["Restaurant ranking"]
+    E --> F["Data export"]
+    F --> G["Streamlit dashboard"]
+    H["Demo API"] --> I["Cloudflare dashboard"]
+    J["User dataset"] --> K["Browser analysis"]
     K --> I
 ```
 
