@@ -17,6 +17,17 @@
 
 ---
 
+## Choose your data path
+
+| Goal | Start here | What to expect |
+| --- | --- | --- |
+| Explore the browser experience | [Worker](worker/index.js) and the demo flow below | Seeded examples; do not mistake them for a fresh live restaurant search |
+| Analyze an existing dataset | The CSV workflow below | Your uploaded sample determines the scope of the comparison |
+| Collect restaurant data | [Python scraper](restaurant_scraper.py) and `.env.example` | External source access and provider configuration |
+| Inspect scoring | [Analytics implementation](dining_analytics.py) | Transparent scoring assumptions rather than guaranteed commercial opportunity |
+
+Keep capture dates and source coverage with your results. A restaurant ranking is a decision aid for the selected sample, not evidence of city-wide demand or a verified business forecast.
+
 ## Overview
 
 Local Dining Intelligence transforms restaurant listings, reviews, menus, ratings, pricing, and location data into decision-ready market insights. It can rank restaurants, compare competitors, measure customer sentiment, and identify category white-space signals for any supported market.
@@ -238,4 +249,3 @@ GitHub Actions runs the Python test suite and syntax checks on pushes and pull r
 ## License
 
 MIT License
-
