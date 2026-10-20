@@ -1,251 +1,119 @@
-# 🍽️ Local Dining Intelligence
+# Local Dining Intelligence
 
-<p align="center">
-  <strong>Restaurant discovery, customer sentiment, competitive benchmarking, and market-opportunity analysis in one reproducible platform.</strong>
-</p>
+[![CI](https://github.com/MadanMohan0537/local-dining-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/MadanMohan0537/local-dining-intelligence/actions/workflows/ci.yml)
 
-<p align="center">
-  <a href="https://local-dining-intelligence.madanmohanlearning.workers.dev/"><img src="https://img.shields.io/badge/Live%20Demo-Cloudflare%20Workers-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Live demo"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"></a>
-  <a href="https://streamlit.io/"><img src="https://img.shields.io/badge/Dashboard-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit"></a>
-  <a href="https://apify.com/"><img src="https://img.shields.io/badge/Data-Apify-00A878?style=for-the-badge" alt="Apify"></a>
-</p>
+**Rank the restaurants in a local market and spot under-served cuisine categories from ratings, review volume, and review sentiment, using a documented formula instead of a black-box score.**
 
-<p align="center">
-  <strong>🌐 <a href="https://local-dining-intelligence.madanmohanlearning.workers.dev/">Open the live dining-intelligence dashboard</a></strong>
-</p>
+**Live demo:** <https://local-dining-intelligence.madanmohanlearning.workers.dev/>. It serves a **synthetic** six-restaurant Boston dataset. You can upload your own CSV or JSON, and the page scores that file in the browser.
 
----
+> **CI status:** recorded runs fail at `pytest -q` with `ModuleNotFoundError: No module named 'demo_data'`. The command that passes is `python -m pytest -q`. See [Known CI failure](#known-ci-failure).
 
-## Choose your data path
+## Problem and who it's for
 
-| Goal | Start here | What to expect |
-| --- | --- | --- |
-| Explore the browser experience | [Worker](worker/index.js) and the demo flow below | Seeded examples; do not mistake them for a fresh live restaurant search |
-| Analyze an existing dataset | The CSV workflow below | Your uploaded sample determines the scope of the comparison |
-| Collect restaurant data | [Python scraper](restaurant_scraper.py) and `.env.example` | External source access and provider configuration |
-| Inspect scoring | [Analytics implementation](dining_analytics.py) | Transparent scoring assumptions rather than guaranteed commercial opportunity |
+Someone deciding where to open a restaurant, which cuisine to add, or how a venue compares with its neighbors usually ends up scrolling map listings and reviews by hand. The intended users are small restaurant operators, local market researchers, and analysts who want a structured, repeatable first pass with the assumptions visible.
 
-Keep capture dates and source coverage with your results. A restaurant ranking is a decision aid for the selected sample, not evidence of city-wide demand or a verified business forecast.
+## Approach
 
-## Overview
+Two parts:
 
-Local Dining Intelligence transforms restaurant listings, reviews, menus, ratings, pricing, and location data into decision-ready market insights. It can rank restaurants, compare competitors, measure customer sentiment, and identify category white-space signals for any supported market.
+1. **Python pipeline.** `restaurant_scraper.py` takes a free-form query such as "Indian restaurants in Frisco, TX", discovers places with Apify's Google Maps extractor, and collects a bounded sample of recent reviews (default 15 restaurants and 5 newest reviews each). Menu enrichment is a separate Apify actor and is best-effort: a failed menu fetch leaves `menu_items` empty. Sentiment is DeepSeek, Anthropic Claude, or a local lexicon fallback when no model key is set. The script then writes timestamped JSON and CSV. `dashboard.py` is a Streamlit app for exploring a saved export or the built-in sample.
+2. **Cloudflare Worker dashboard.** `worker/index.js` serves the static page in `public/` plus `GET /health` and `GET /api/demo`. Uploaded files are parsed in the browser and are not sent to the Worker.
 
-The repository includes two complementary applications:
+Two different scores are in the repo.
 
-1. **Cloudflare application:** a globally deployed, edge-compatible dashboard with a synthetic demonstration dataset and private CSV/JSON analysis.
-2. **Python intelligence pipeline:** an Apify-powered scraper with DeepSeek, Anthropic Claude, or local lexicon sentiment analysis, normalized exports, and a richer Streamlit console.
+The **intelligence score** (0–100) is duplicated in `dining_analytics.py` (what Streamlit displays), `worker/index.js` (`/api/demo`), and the upload scorer in `public/index.html`. The weights match across those three copies:
 
-## Live application
+| Restaurant intelligence score | Weight |
+|---|---:|
+| Normalized rating (rating / 5) | 45% |
+| Review sentiment, or normalized rating when sentiment is missing | 40% |
+| Review-volume confidence (review count capped at 500, then divided by 500) | 15% |
 
-**Deployment:** [local-dining-intelligence.madanmohanlearning.workers.dev](https://local-dining-intelligence.madanmohanlearning.workers.dev/)
+| Category opportunity score | Weight |
+|---|---:|
+| Observed review demand | 45% |
+| Lower competitive saturation | 35% |
+| Category quality gap (1 − average rating / 5) | 20% |
 
-The live application provides:
+The scraper's exported **`recommendation_score`** is a different number, on a 0–1 scale: 50% normalized rating and 50% sentiment. Sentiment falls back to normalized rating when it is missing, including when `--no-sentiment` is set. That score does not use review volume.
 
-- Restaurant count, average rating, customer-review volume, sentiment, and category KPIs
-- Quality-versus-traction restaurant rankings
-- Customer-sentiment-aware intelligence scores
-- Category opportunity analysis
-- Synthetic Boston demonstration data
-- Browser-private CSV and JSON uploads
-- Downloadable dataset template
-- Responsive desktop and mobile interface
+These are directional research signals, not revenue or profitability forecasts.
 
-## Analyze your own restaurant data
+## What exists today
 
-Select **Upload data** in the live dashboard and choose a CSV or JSON file.
+Checked against this repository and the live deployment:
 
-Privacy characteristics:
+- Live Worker: `GET /` returns the dashboard, `GET /health` returns `{"status":"ok","runtime":"cloudflare-workers"}`, and `GET /api/demo` returns the six synthetic Boston restaurants with computed scores, a summary, and the disclaimer `Synthetic demo data; not production market research.` The names match `demo_data.py`.
+- Browser upload in `public/index.html`: CSV or JSON (a top-level array, or an object with `restaurants`, `records`, or `data`). Files larger than 5 × 1024 × 1024 bytes are rejected. Analysis uses at most the first 10,000 rows. The page includes a CSV template download.
+- `restaurant_scraper.py`: Apify discovery (`compass/google-maps-extractor`), recent reviews (`compass/Google-Maps-Reviews-Scraper`), menu enrichment (`wedo_software/wedo-scrape-menu`), three sentiment providers (DeepSeek, Anthropic Claude, lexicon), `recommendation_score` ranking, and timestamped JSON/CSV export. Flags include `--demo`, `--no-menu`, `--no-sentiment`, `--no-push`, `--max-restaurants`, and `--max-reviews`.
+- `--demo` does not call Apify. It always loads the six built-in Boston restaurants, then still runs sentiment (the lexicon, when no model key is set), so exported sentiment can differ from the scores stored in `demo_data.py` and shown on the dashboards. The query is only the location label on that export.
+- Streamlit (`dashboard.py`) defaults to **Built-in demo** and reads that sample through `dining_analytics.py`, so it shows the intelligence score rather than `recommendation_score`.
+- Example JSON and CSV exports for Boston, MA and Frisco, TX in `data/` (two Boston files, one Frisco file).
+- One analytics test, `tests/test_analytics.py` (`test_market_analytics`). `python -m pytest -q` reports `1 passed`.
 
-- Analysis runs entirely inside the browser.
-- The file is never sent to the Cloudflare Worker.
-- Uploaded data is not persisted, logged, or shared.
-- Displayed text is escaped before rendering.
-- Files are limited to 5 MB and 10,000 rows.
+## How success would be measured
 
-Supported JSON structures include a top-level array or an object containing `restaurants`, `records`, or `data`.
+No measured results are committed in this repository.
 
-Recommended input columns:
+| Measure | Status |
+|---|---|
+| Analyst time for a first-pass competitive scan | Not yet measured |
+| Agreement between the lexicon fallback and LLM sentiment on the same reviews | Not yet measured |
+| Whether "opportunity" categories hold up against independent data (rent, foot traffic, delivery demand) | Not yet measured |
+
+## Limitations
+
+- The live demo uses six synthetic restaurants. It does not run a live search.
+- A ranking describes the sample that was collected. Defaults are 15 restaurants and 5 reviews each. The files in `data/` are smaller samples (4 or 6 restaurants). That is not city-wide demand.
+- The opportunity score ignores rent, labor, delivery demand, demographics, and foot traffic.
+- LLM sentiment is an imperfect signal, so audit a sample of reviews before relying on it.
+- Discovery and reviews come from Google Maps through Apify actors. The files in `data/` include restaurant listings, short review excerpts, and Google Maps links. Scraped Google Maps data is subject to the source's terms. Check those terms before redistributing it, and collect only what you need.
+- Unless you pass `--no-push`, the scraper runs `git add -A`, commits, and pushes the project and the new dataset to `GITHUB_REPO_URL`. It skips that step when `GITHUB_TOKEN` or `GITHUB_REPO_URL` is unset. Pass `--no-push` unless you mean to publish.
+- The intelligence-score weights are copied in three places. They match today; editing one file does not update the others.
+
+## Known CI failure
+
+`.github/workflows/ci.yml` installs `requirements.txt` and runs `pytest -q` on Python 3.11, then `python -m py_compile` on the four Python modules.
+
+Every recorded CI run has failed (10 runs on `main`, latest on 2026-10-04). The earliest and the latest both stop here:
 
 ```text
-name, category, price_level, rating, reviews_count,
-sentiment_score, address, latitude, longitude
+tests/test_analytics.py:3: ModuleNotFoundError: No module named 'demo_data'
 ```
 
-If `sentiment_score` is missing, the live dashboard uses normalized rating as a transparent fallback. A ready-to-use CSV template is available in the interface.
+Bare `pytest` does not put the repository root on `sys.path`, so the test cannot import `demo_data`. `python -m pytest -q` does, and that command passed here (`1 passed` on Python 3.12.3). A `conftest.py`, a `pythonpath = .` pytest setting, or switching the workflow to `python -m pytest` would fix CI. Not fixed here.
 
-## Intelligence methodology
+## Quick start
 
-### Restaurant intelligence score
-
-The dashboard combines:
-
-| Signal | Weight | Purpose |
-|---|---:|---|
-| Normalized Google rating | 45% | Observed customer quality |
-| Review sentiment | 40% | Text-based customer experience |
-| Review-volume confidence | 15% | Confidence and market traction |
-
-### Category opportunity score
-
-| Signal | Weight | Purpose |
-|---|---:|---|
-| Observed review demand | 45% | Customer activity in the category |
-| Lower competitive saturation | 35% | Relative market white space |
-| Category quality gap | 20% | Opportunity to outperform incumbents |
-
-These values are directional research signals—not revenue, profitability, or investment forecasts. A real market decision should also consider rent, delivery demand, foot traffic, labor costs, demographics, and primary customer research.
-
-## Architecture
-
-```mermaid
-flowchart TD
-    A["Search query"] --> B["Apify discovery"]
-    B --> C["Review and menu enrichment"]
-    C --> D["Sentiment analysis"]
-    D --> E["Restaurant ranking"]
-    E --> F["Data export"]
-    F --> G["Streamlit dashboard"]
-    H["Demo API"] --> I["Cloudflare dashboard"]
-    J["User dataset"] --> K["Browser analysis"]
-    K --> I
-```
-
-## Core capabilities
-
-- **Location-agnostic discovery:** search any supported cuisine, neighborhood, or city.
-- **Restaurant enrichment:** collect ratings, reviews, categories, price levels, addresses, coordinates, websites, and menus.
-- **Flexible sentiment providers:** use DeepSeek, Claude, or the included no-cost lexicon fallback.
-- **Explainable ranking:** combine rating, sentiment, and review confidence using documented weights.
-- **Market analysis:** compare competitors and identify lower-saturation category opportunities.
-- **Dual export formats:** generate timestamped JSON and flattened CSV files.
-- **Offline demonstration:** evaluate the product without API keys or paid services.
-- **Cloud deployment:** run the public dashboard globally through Cloudflare Workers.
-
-## Run the live-style Cloudflare application locally
+Worker dashboard (Node.js 22 or newer; `wrangler` 4.124.0 declares `node >= 22`):
 
 ```bash
 git clone https://github.com/MadanMohan0537/local-dining-intelligence.git
 cd local-dining-intelligence
-
 npm install
 npm run check
 npm run dev
 ```
 
-The Worker exposes:
+`npm run check` is `node --check worker/index.js`. `npm run dev` is `wrangler dev` and, with this Wrangler version, serves the app at <http://localhost:8787> (`/health` and `/api/demo` included).
 
-| Endpoint | Purpose |
-|---|---|
-| `GET /health` | Cloudflare runtime health check |
-| `GET /api/demo` | Synthetic restaurant dataset and calculated analytics |
-
-## Run the Python and Streamlit platform
+Python pipeline and Streamlit dashboard (Python 3.11 or newer; CI and the Dockerfile use 3.11):
 
 ```bash
 python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-
-# macOS/Linux
-source .venv/bin/activate
-
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-streamlit run dashboard.py
-```
-
-The Streamlit application opens at `http://localhost:8501` and initially uses the built-in demonstration data.
-
-## Run a live restaurant search
-
-Copy `.env.example` to `.env` and configure an Apify token:
-
-```ini
-APIFY_API_TOKEN=your_apify_token
-SENTIMENT_PROVIDER=auto
-DEEPSEEK_API_KEY=
-ANTHROPIC_API_KEY=
-OUTPUT_DIR=data
-```
-
-Examples:
-
-```bash
-python restaurant_scraper.py "Indian restaurants in Frisco, TX" --max-restaurants 15 --max-reviews 5 --no-push
-python restaurant_scraper.py "Vegan restaurants in Boston, MA" --no-menu --no-push
-python restaurant_scraper.py "Seattle, WA" --no-sentiment --no-push
+python -m pytest -q                # 1 passed; bare pytest cannot import demo_data
+streamlit run dashboard.py         # http://localhost:8501, opens on Built-in demo
 python restaurant_scraper.py "Boston, MA" --demo --no-push
 ```
 
-After generating a dataset, start `streamlit run dashboard.py` and select **Latest saved dataset**.
-
-## Data pipeline
-
-1. Interpret the free-form cuisine and location query.
-2. Discover restaurants through the Apify Google Maps extractor.
-3. Collect a bounded sample of recent customer reviews.
-4. Enrich restaurants with menus and prices when available.
-5. Run the configured sentiment provider or local fallback.
-6. Calculate recommendation rankings.
-7. Export normalized JSON and CSV datasets.
-8. Explore results through the analytics dashboard.
-
-## Repository structure
-
-```text
-restaurant_scraper.py    Apify discovery, reviews, menus, sentiment, exports
-dining_analytics.py      Ranking, market KPIs, and opportunity calculations
-dashboard.py             Full local Streamlit application
-demo_data.py             Deterministic offline demonstration data
-data/                    Example restaurant exports
-tests/                   Analytics tests
-worker/                  Cloudflare Worker API
-public/                  Cloudflare-hosted web dashboard
-wrangler.jsonc           Cloudflare configuration
-package.json             Worker build and deployment scripts
-```
-
-## Deploy to Cloudflare
-
-Cloudflare Workers build settings:
-
-```text
-Production branch: main
-Build command: npm install
-Deploy command: npm run deploy
-Root directory: leave blank
-```
-
-Do not enter `/` in the root-directory field.
-
-Manual deployment:
+A live search needs `APIFY_API_TOKEN` in `.env` (see `.env.example`). Sentiment keys are optional. Pass `--no-push` unless GitHub publishing is configured and intended:
 
 ```bash
-npm install
-npm run deploy
+python restaurant_scraper.py "Indian restaurants in Frisco, TX" --max-restaurants 15 --max-reviews 5 --no-push
 ```
-
-## Testing
-
-```bash
-pytest -q
-python -m py_compile restaurant_scraper.py dining_analytics.py demo_data.py dashboard.py
-npm run check
-```
-
-GitHub Actions runs the Python test suite and syntax checks on pushes and pull requests.
-
-## Responsible use
-
-- Follow source-platform terms, rate limits, and applicable privacy requirements.
-- Collect only the fields necessary for legitimate market research.
-- Do not infer sensitive personal characteristics from public reviews.
-- Treat model-generated sentiment as an imperfect analytical signal.
-- Audit representative review samples before making business decisions.
-- Validate opportunity scores with real operational and primary-research data.
 
 ## License
 
-MIT License
+MIT. See [LICENSE](LICENSE).
