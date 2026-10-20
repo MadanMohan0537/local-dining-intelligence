@@ -114,6 +114,28 @@ A live search needs `APIFY_API_TOKEN` in `.env` (see `.env.example`). Sentiment 
 python restaurant_scraper.py "Indian restaurants in Frisco, TX" --max-restaurants 15 --max-reviews 5 --no-push
 ```
 
+## Deployment
+
+The dashboard deploys as a Cloudflare Worker. Config is `wrangler.jsonc`:
+
+| Setting | Value |
+|---|---|
+| Worker name | `local-dining-intelligence` |
+| Entry point | `worker/index.js` |
+| Static assets | `public/`, bound as `ASSETS` |
+| Routes handled in the Worker before assets | `/api/*`, `/health` |
+| Secrets | None. The Worker only reads the `ASSETS` binding. |
+
+Keep the Worker name `local-dining-intelligence`. That name is the host of the live dashboard at <https://local-dining-intelligence.madanmohanlearning.workers.dev/>.
+
+From the repository root, with Wrangler authenticated to the Cloudflare account for this Worker (Node.js 22 or newer):
+
+```bash
+npx wrangler deploy
+```
+
+Wrangler loads `wrangler.jsonc` from the repo root and deploys that Worker directly.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
